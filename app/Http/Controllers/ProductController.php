@@ -24,7 +24,7 @@ class ProductController extends Controller {
     $validator = Validator::make($req->all(), [
       'title' => 'required|min:2|max:64',
       'description' => 'max:256',
-      'price' => 'numeric|min:0.01|max:100000|regex:/^\d+(\.\d{1,2})?$/',
+      'price' => 'required|numeric|min:0.01|max:100000|regex:/^\d+(\.\d{1,2})?$/',
       'currency' => 'required|in:' . implode(',', $this->supported_currencies)
     ]);
 
@@ -32,12 +32,10 @@ class ProductController extends Controller {
       return $this->respondWithValidationError($validator->errors()->messages(), 422);
     }
 
-    $fields = [
-      'title' => $req->title,
-      'description' => $req->description ? $req->description : '',
-      'price' => $req->price,
-      'currency' => $req->currency,
-    ];
+    $fields = $req->only(['title', 'description', 'price', 'currency']);
+    
+    if(!isset($fields['description']))
+      $fields['description'] = '';
 
     $product = Product::create($fields);
     $product->save();
@@ -50,7 +48,7 @@ class ProductController extends Controller {
       'title' => 'min:2|max:64',
       'description' => 'max:256',
       'price' => 'numeric|min:0.01|max:100000|regex:/^\d+(\.\d{1,2})?$/',
-      'currency' => 'required|in:' . implode(',', $this->supported_currencies)
+      'currency' => 'in:' . implode(',', $this->supported_currencies)
     ]);
 
     if ($validator->fails()) {

@@ -10,7 +10,7 @@ class CreateProductsTable extends Migration{
       $table->id();
       $table->string('title');
       $table->text('description');
-      $table->integer('price')->unsigned();
+      $table->float('price')->unsigned();
       $table->string('currency')->default('GEL');
       $table->timestamps();
     });
